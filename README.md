@@ -60,6 +60,7 @@
 - [Engineering Highlights](#-engineering-highlights)
 - [Troubleshooting](#-troubleshooting)
 - [Extra Documentation](#-extra-documentation)
+- [Deploying the Frontend to Vercel](#-deploying-the-frontend-to-vercel)
 - [Maintainer & Contact](#-maintainer--contact)
 - [Attribution](#-attribution)
 - [Upstream Reference](#-upstream-reference)
@@ -380,7 +381,7 @@ bank-frontend/.env.local
 Add:
 
 ```env
-VITE_API_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8080/api
 VITE_ENABLE_AUDIT=true
 VITE_ENABLE_SECURITY=true
 ```
@@ -1549,7 +1550,7 @@ Windows:
 Verify:
 
 ```env
-VITE_API_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8080/api
 ```
 
 and make sure the Spring Boot backend is running.
@@ -1618,6 +1619,28 @@ Additional project documentation is available in the repository:
 - [`PROJECT_REPORT.md`](PROJECT_REPORT.md)
 - [`swagger-documentation/openapi.yaml`](swagger-documentation/openapi.yaml)
 - [`swagger-documentation/openapi.json`](swagger-documentation/openapi.json)
+
+---
+
+# 🚢 Deploying the Frontend to Vercel
+
+The React frontend can be deployed to Vercel from this repository. No backend URL is committed here; the frontend reads it from an environment variable at build time.
+
+| Setting | Value |
+|---|---|
+| Root Directory | `bank-frontend` |
+| Framework Preset | Vite |
+| Install Command | `npm install` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+Set this environment variable in the Vercel project, pointing at your own backend and including the `/api` context path:
+
+```env
+VITE_API_BASE_URL=https://your-backend.example.com/api
+```
+
+The production build fails if `VITE_API_BASE_URL` is missing, so a deployment cannot fall back to a localhost or third-party backend. See [`bank-frontend/README.md`](bank-frontend/README.md#deploying-to-vercel) for the full settings, including the backend `FRONTEND_URL` value required for CORS.
 
 ---
 

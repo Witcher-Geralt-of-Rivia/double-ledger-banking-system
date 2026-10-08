@@ -11,3 +11,10 @@ bank-backend/src/main/resources/application.yml
 bank-backend/src/main/resources/application.yml
 bank-frontend/dist bank-frontend/node_modules
 .idea
+
+# Local environment overrides (never commit)
+.env.local
+.env.*.local
+
+# Frontend build output
+bank-frontend/dist/

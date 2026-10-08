@@ -13,18 +13,30 @@ The dev server defaults to http://localhost:8081. Ensure the backend is reachabl
 
 ## Environment
 
-Create `.env.local` in `bank-frontend/`:
+The backend URL and feature flags come from Vite environment variables. The committed files are:
+
+| File | Loaded for | Purpose |
+|---|---|---|
+| `.env` | every mode | Development defaults (`http://localhost:8080/api`, feature flags) |
+| `.env.production` | `npm run build` | Clears `VITE_API_BASE_URL`, so production has no built-in backend |
+| `.env.example` | never (template) | Placeholders to copy from |
+
+To override the development defaults, create `.env.local` in `bank-frontend/` (git-ignored):
 
 ```sh
-VITE_API_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8080/api
 VITE_ENABLE_MOCKS=false
 VITE_ENABLE_AUDIT=false
 VITE_ENABLE_SECURITY=false
 ```
 
-`VITE_API_BASE_URL` points to the backend REST API. `VITE_ENABLE_MOCKS` should stay false (mock data has been removed).
+`VITE_API_BASE_URL` points to the backend REST API and must include the backend context path (`/api`). `VITE_ENABLE_MOCKS` should stay false (mock data has been removed).
 
 `VITE_ENABLE_AUDIT` and `VITE_ENABLE_SECURITY` gate frontend routes that require backend modules not present in all environments. Keep both `false` unless those APIs are available.
+
+Production builds (`npm run build`) must be given `VITE_API_BASE_URL` by the environment and fail without it, so a build can never fall back to a localhost or third-party backend. For a local production build, set it in `.env.production.local` (git-ignored) or inline, for example `VITE_API_BASE_URL=http://localhost:8080/api npm run build`.
+
+`VITE_*` values are compiled into the client bundle and are publicly visible. Never put credentials, API keys or tokens in them.
 
 ## Features
 
@@ -87,11 +99,33 @@ VITE_ENABLE_SECURITY=false
 ## Build & deploy
 
 ```sh
-npm run build
+npm run build   # requires VITE_API_BASE_URL, see Environment
 npm run preview # optional local smoke test
 ```
 
 Deploy the `dist/` directory to your hosting target. If serving behind a different origin, ensure CORS allows the frontend origin.
+
+### Deploying to Vercel
+
+| Setting | Value |
+|---|---|
+| Root Directory | `bank-frontend` |
+| Framework Preset | Vite |
+| Install Command | `npm install` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+The install, build and output settings are pinned in [`vercel.json`](vercel.json). It also rewrites every path that is not a built file to `index.html`, so direct navigation to client-side routes such as `/login` or `/dashboard` works.
+
+Environment variables to set in the Vercel project (for both Production and Preview):
+
+| Variable | Required | Value |
+|---|---|---|
+| `VITE_API_BASE_URL` | yes | Base URL of your own backend, including `/api`, for example `https://your-backend.example.com/api` |
+| `VITE_ENABLE_SECURITY` | no | Defaults to `true` from `.env.production` |
+| `VITE_ENABLE_AUDIT` | no | Defaults to `true` from `.env.production` |
+
+No backend URL is committed to this repository. The backend must also allow the deployed frontend origin: with the `prod` profile, set `FRONTEND_URL` on the backend to the Vercel URL, which drives CORS and the password-reset links.
 
 ## Troubleshooting
 
