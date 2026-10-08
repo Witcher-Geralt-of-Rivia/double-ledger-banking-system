@@ -12,9 +12,7 @@
 ![OpenAPI](https://img.shields.io/badge/Swagger%20%2F%20OpenAPI-Docs-85EA2D?logo=swagger&logoColor=black)
 ![Maven](https://img.shields.io/badge/Maven-Build-C71A36?logo=apachemaven&logoColor=white)
 
-[![Reference Demo](https://img.shields.io/badge/Reference%20Demo-Open-0ea5e9?style=for-the-badge)](https://ledgerlypay.vercel.app)
-
-> The linked deployment is a reference deployment from the upstream project. Current maintainer and repository contact details are listed under [Maintainer & Contact](#-maintainer--contact).
+> **Current Maintainer:** Jakub Kowalski. See [Maintainer & Contact](#-maintainer--contact), [Attribution](#-attribution) and [Upstream Reference](#-upstream-reference).
 
 </div>
 
@@ -64,6 +62,7 @@
 - [Extra Documentation](#-extra-documentation)
 - [Maintainer & Contact](#-maintainer--contact)
 - [Attribution](#-attribution)
+- [Upstream Reference](#-upstream-reference)
 - [License](#-license)
 
 ---
@@ -1622,18 +1621,6 @@ Additional project documentation is available in the repository:
 
 ---
 
-# 🌐 Live Demo
-
-A reference deployment of the frontend, hosted by the upstream project, is available at:
-
-```text
-https://ledgerlypay.vercel.app
-```
-
-> **Note:** This is the upstream project's deployment and is not operated from this repository. It demonstrates the frontend experience. Local development is recommended when exploring the complete backend, database, Swagger API, and transaction-processing workflow.
-
----
-
 # 📁 Important Project Structure
 
 A simplified project structure:
@@ -1693,6 +1680,20 @@ For questions, maintenance requests, or bug reports, use the GitHub repository/i
 This repository is a maintained copy of the open-source project [AryanDevCodes/double-ledger-banking-system](https://github.com/AryanDevCodes/double-ledger-banking-system), originally authored by [@AryanDevCodes](https://github.com/AryanDevCodes) and released under the MIT License.
 
 Jakub Kowalski is the current maintainer of this copy. Original copyright and license attribution remain preserved, unchanged, in [`LICENSE`](LICENSE). See [`NOTICE.md`](NOTICE.md) for details.
+
+---
+
+# 🔗 Upstream Reference
+
+The resources below belong to the original upstream project. They are listed for reference only: they are not operated by the current maintainer and are not deployments of this repository.
+
+| Resource | Link |
+|---|---|
+| Upstream repository | https://github.com/AryanDevCodes/double-ledger-banking-system |
+| Upstream hosted demo (frontend) | https://ledgerlypay.vercel.app |
+| Upstream demo video | https://www.youtube.com/watch?v=qOHr7ZWKY7E |
+
+Local development ([Quick Start](#-quick-start)) is recommended for exploring the complete backend, database, Swagger API, and transaction-processing workflow.
 
 ---
 
