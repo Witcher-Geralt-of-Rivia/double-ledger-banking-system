@@ -12,7 +12,9 @@
 ![OpenAPI](https://img.shields.io/badge/Swagger%20%2F%20OpenAPI-Docs-85EA2D?logo=swagger&logoColor=black)
 ![Maven](https://img.shields.io/badge/Maven-Build-C71A36?logo=apachemaven&logoColor=white)
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open-0ea5e9?style=for-the-badge)](https://ledgerlypay.vercel.app)
+[![Reference Demo](https://img.shields.io/badge/Reference%20Demo-Open-0ea5e9?style=for-the-badge)](https://ledgerlypay.vercel.app)
+
+> The linked deployment is a reference deployment from the upstream project. Current maintainer and repository contact details are listed below.
 
 </div>
 
@@ -311,8 +313,8 @@ Install:
 ## 1. Clone the repository
 
 ```bash
-git clone <your-repository-url>
-cd <your-repository>
+git clone https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system.git
+cd double-ledger-banking-system
 ```
 
 ---
@@ -1682,3 +1684,23 @@ See [`LICENSE`](LICENSE) for details.
 **Designed around correctness, concurrency, security, and reliability.**
 
 </div>
+
+
+---
+
+# 👤 Maintainer & Contact
+
+**Current maintainer:** Jakub Kowalski  
+**GitHub:** https://github.com/Witcher-Geralt-of-Rivia  
+**Repository:** https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system  
+**Portfolio:** https://jakub-kowalski-portfolio.vercel.app
+
+For questions, maintenance requests, or project-related contact, use the current GitHub repository/issues or the portfolio contact channels.
+
+---
+
+# 🧾 Attribution
+
+This repository is currently maintained by Jakub Kowalski. Original copyright and license attribution remain unchanged in [LICENSE](LICENSE).
+
+**Upstream project:** https://github.com/AryanDevCodes/double-ledger-banking-system
