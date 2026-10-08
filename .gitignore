@@ -18,3 +18,7 @@ bank-frontend/dist bank-frontend/node_modules
 
 # Frontend build output
 bank-frontend/dist/
+
+# IDE and generated development artifacts
+*.iml
+vite.config.*.timestamp-*
