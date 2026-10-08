@@ -1,4 +1,18 @@
 # 📊 BANK LEDGER & PAYMENT ENGINE — PROJECT REPORT 2026
+
+## MAINTENANCE & CONTACT
+
+**Current Maintainer:** Jakub Kowalski  
+**GitHub:** https://github.com/Witcher-Geralt-of-Rivia  
+**Repository:** https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system  
+**Portfolio:** https://jakub-kowalski-portfolio.vercel.app  
+
+For project questions, maintenance requests, or bug reports, use the GitHub repository/issues or the portfolio contact channels.
+
+This maintained repository derives from the upstream project at https://github.com/AryanDevCodes/double-ledger-banking-system. Original copyright and license attribution remain preserved in `LICENSE`; see `NOTICE.md`.
+
+---
+
 **Initial Date:** February 9, 2026  
 **Report Update:** May 23, 2026  
 **Project Type:** Full-Stack Banking System — Spring Boot 3.5.10 REST API + React 18 Dashboard  

@@ -13,19 +13,30 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bank</name>
 	<description>Demo project for Spring Boot</description>
-	<url/>
+	<url>https://jakub-kowalski-portfolio.vercel.app</url>
 	<licenses>
 		<license/>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<id>Witcher-Geralt-of-Rivia</id>
+			<name>Jakub Kowalski</name>
+			<url>https://github.com/Witcher-Geralt-of-Rivia</url>
+			<roles>
+				<role>maintainer</role>
+			</roles>
+		</developer>
 	</developers>
 	<scm>
-		<connection/>
-		<developerConnection/>
+		<connection>scm:git:https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system.git</connection>
+		<developerConnection>scm:git:https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system.git</developerConnection>
 		<tag/>
-		<url/>
+		<url>https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system</url>
 	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system/issues</url>
+	</issueManagement>
 	<properties>
 		<java.version>21</java.version>
 	</properties>

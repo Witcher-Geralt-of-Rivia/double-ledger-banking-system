@@ -12,7 +12,9 @@
 ![OpenAPI](https://img.shields.io/badge/Swagger%20%2F%20OpenAPI-Docs-85EA2D?logo=swagger&logoColor=black)
 ![Maven](https://img.shields.io/badge/Maven-Build-C71A36?logo=apachemaven&logoColor=white)
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open-0ea5e9?style=for-the-badge)](https://ledgerlypay.vercel.app)
+[![Reference Demo](https://img.shields.io/badge/Reference%20Demo-Open-0ea5e9?style=for-the-badge)](https://ledgerlypay.vercel.app)
+
+> The linked deployment is a reference deployment from the upstream project. Current maintainer and repository contact details are listed under [Maintainer & Contact](#-maintainer--contact).
 
 </div>
 
@@ -60,6 +62,8 @@
 - [Engineering Highlights](#-engineering-highlights)
 - [Troubleshooting](#-troubleshooting)
 - [Extra Documentation](#-extra-documentation)
+- [Maintainer & Contact](#-maintainer--contact)
+- [Attribution](#-attribution)
 - [License](#-license)
 
 ---
@@ -311,8 +315,8 @@ Install:
 ## 1. Clone the repository
 
 ```bash
-git clone <your-repository-url>
-cd <your-repository>
+git clone https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system.git
+cd double-ledger-banking-system
 ```
 
 ---
@@ -1620,13 +1624,13 @@ Additional project documentation is available in the repository:
 
 # 🌐 Live Demo
 
-The frontend is deployed at:
+A reference deployment of the frontend, hosted by the upstream project, is available at:
 
 ```text
 https://ledgerlypay.vercel.app
 ```
 
-> **Note:** The live deployment demonstrates the frontend experience. Local development is recommended when exploring the complete backend, database, Swagger API, and transaction-processing workflow.
+> **Note:** This is the upstream project's deployment and is not operated from this repository. It demonstrates the frontend experience. Local development is recommended when exploring the complete backend, database, Swagger API, and transaction-processing workflow.
 
 ---
 
@@ -1667,9 +1671,34 @@ A simplified project structure:
 
 ---
 
+# 👤 Maintainer & Contact
+
+**Current Maintainer:** Jakub Kowalski
+
+**GitHub:**  
+https://github.com/Witcher-Geralt-of-Rivia
+
+**Portfolio:**  
+https://jakub-kowalski-portfolio.vercel.app
+
+**Repository:**  
+https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system
+
+For questions, maintenance requests, or bug reports, use the GitHub repository/issues or the portfolio contact channels.
+
+---
+
+# 🧾 Attribution
+
+This repository is a maintained copy of the open-source project [AryanDevCodes/double-ledger-banking-system](https://github.com/AryanDevCodes/double-ledger-banking-system), originally authored by [@AryanDevCodes](https://github.com/AryanDevCodes) and released under the MIT License.
+
+Jakub Kowalski is the current maintainer of this copy. Original copyright and license attribution remain preserved, unchanged, in [`LICENSE`](LICENSE). See [`NOTICE.md`](NOTICE.md) for details.
+
+---
+
 # 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. The original copyright notice is preserved unchanged.
 
 See [`LICENSE`](LICENSE) for details.
 

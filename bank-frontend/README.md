@@ -98,3 +98,15 @@ Deploy the `dist/` directory to your hosting target. If serving behind a differe
 - Empty data: confirm backend is up and `VITE_API_BASE_URL` is correct.
 - Auth loops: check tokens in localStorage and backend CORS/HTTPS settings.
 - Port conflict (frontend): adjust `server.port` in `vite.config.ts`.
+
+
+## Maintainer & Contact
+
+- **Current Maintainer:** Jakub Kowalski
+- **GitHub:** https://github.com/Witcher-Geralt-of-Rivia
+- **Repository:** https://github.com/Witcher-Geralt-of-Rivia/double-ledger-banking-system
+- **Portfolio:** https://jakub-kowalski-portfolio.vercel.app
+
+For project questions, maintenance requests, or bug reports, use the GitHub repository/issues or the portfolio contact channels.
+
+Original copyright and license attribution are retained in the repository root `LICENSE` file; see the root `NOTICE.md`.
