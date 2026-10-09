@@ -60,6 +60,7 @@
 - [Engineering Highlights](#-engineering-highlights)
 - [Troubleshooting](#-troubleshooting)
 - [Extra Documentation](#-extra-documentation)
+- [Running the Backend in Production](#-running-the-backend-in-production)
 - [Deploying the Frontend to Vercel](#-deploying-the-frontend-to-vercel)
 - [Maintainer & Contact](#-maintainer--contact)
 - [Attribution](#-attribution)
@@ -340,6 +341,8 @@ spring:
 ```
 
 Use your actual database configuration.
+
+`application.yml` reads the connection settings and the token signing key from the environment variables `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` and `JWT_SECRET`. Set them before starting the backend instead of editing the file. [Running the Backend in Production](#-running-the-backend-in-production) explains each one.
 
 ---
 
@@ -1622,6 +1625,80 @@ Additional project documentation is available in the repository:
 - [`PROJECT_REPORT.md`](PROJECT_REPORT.md)
 - [`swagger-documentation/openapi.yaml`](swagger-documentation/openapi.yaml)
 - [`swagger-documentation/openapi.json`](swagger-documentation/openapi.json)
+
+---
+
+# 🏭 Running the Backend in Production
+
+The backend is a single Spring Boot jar. Everything that differs between environments is read from environment variables, and no credential or URL is committed to this repository.
+
+## Build
+
+Requires JDK 21.
+
+```bash
+cd bank-backend
+./mvnw clean package
+```
+
+On Windows use `.\mvnw.cmd clean package`. The build runs the test suite and writes `bank-backend/target/bank-0.0.1-SNAPSHOT.jar`.
+
+## Environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `DB_URL` | yes | JDBC URL, for example `jdbc:postgresql://localhost:5432/double_ledger` |
+| `DB_USERNAME` | yes | Database role the application connects as |
+| `DB_PASSWORD` | yes | Password of that role |
+| `JWT_SECRET` | yes | Base64-encoded HMAC key that signs the tokens (HS256), at least 32 random bytes. Generate one with `openssl rand -base64 64` |
+| `FRONTEND_URL` | yes, with the `prod` profile | The one browser origin that CORS allows, without a trailing slash, for example `https://your-frontend.example.com`. Password-reset links are built from it |
+| `PORT` | no | HTTP port with the `prod` profile (default `8080`) |
+| `MAIL_ENABLED` | no | `true` sends password-reset email (default `false`) |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `MAIL_SMTP_AUTH`, `MAIL_STARTTLS` | only when mail is enabled | SMTP settings |
+
+Keep the values in the host's secret store or a protected environment file, never in Git.
+
+## Start
+
+```bash
+java -jar bank-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+```
+
+With the `prod` profile the API is served under the `/api` context path, the health check is `GET /api/actuator/health`, Swagger UI is switched off, CORS allows only `FRONTEND_URL`, and Hibernate validates the schema without changing it.
+
+Terminate TLS in a reverse proxy in front of the service. Behind a proxy, also pass `--server.address=127.0.0.1 --server.forward-headers-strategy=native` so the application listens on loopback only and trusts the proxy's forwarded headers.
+
+## Database
+
+Use PostgreSQL 15 or newer with one empty database and one login role that owns it.
+
+The `prod` profile neither creates nor alters tables. On a new database, and after an update that adds entities, start the application once with schema updates enabled, stop it, then start it normally:
+
+```bash
+java -jar bank-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --spring.jpa.hibernate.ddl-auto=update
+```
+
+Then apply `bank-backend/src/main/resources/schema.sql` once. It adds a check constraint and a partial unique index that Hibernate does not generate, and it is not run automatically:
+
+```bash
+psql -h <host> -U <role> -d <database> -f bank-backend/src/main/resources/schema.sql
+```
+
+The roles are reference data and are not seeded automatically, because `DataInitializer` is disabled. Insert them once:
+
+```sql
+INSERT INTO roles (name) VALUES
+  ('ROLE_ADMIN'), ('ROLE_MANAGER'), ('ROLE_CUSTOMER_MANAGER'), ('ROLE_AUDITOR'), ('ROLE_USER');
+```
+
+## First administrator
+
+There is no registration endpoint, so the first administrator is created directly in the database:
+
+- a row in `users` with `username`, `email`, a BCrypt hash in `password`, `is_active = true` and `is_locked = false`;
+- a row in `user_roles` that links it to `ROLE_ADMIN`.
+
+Leave `last_login` empty so the first login requires a password change. Never leave `password` empty: an account without a password is allowed to log in once without one.
 
 ---
 
