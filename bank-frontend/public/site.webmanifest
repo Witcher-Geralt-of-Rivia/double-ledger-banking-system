@@ -1,6 +1,6 @@
 {
-  "name": "bank-ledger",
-  "short_name": "ledgerlypay",
+  "name": "Double Ledger Banking System",
+  "short_name": "Double Ledger",
   "icons": [
     {
       "src": "public/web-app-manifest-192x192.png",
