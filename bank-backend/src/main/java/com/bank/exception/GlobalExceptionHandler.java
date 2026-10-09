@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -189,6 +190,23 @@ public class GlobalExceptionHandler {
     ApiResponse<Void> response =
         ApiResponse.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), errorDetails);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+  }
+
+  /**
+   * * Handle AccessDeniedException (a method-level @PreAuthorize rule rejected the caller) *
+   * Returns 403 FORBIDDEN
+   */
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
+    log.warn("Access denied: {}", ex.getMessage());
+    ErrorDetails errorDetails =
+        ErrorDetails.builder()
+            .errorCode("ACCESS_DENIED")
+            .errorMessage("You do not have permission to perform this action.")
+            .build();
+    ApiResponse<Void> response =
+        ApiResponse.error(HttpStatus.FORBIDDEN.value(), "Access denied", errorDetails);
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
   }
 
   /** * Handle all other exceptions * Returns 500 INTERNAL SERVER ERROR */
