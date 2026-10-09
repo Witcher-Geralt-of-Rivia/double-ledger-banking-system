@@ -3,9 +3,11 @@ package com.bank.service.auth;
 import com.bank.entity.RefreshToken;
 import com.bank.entity.User;
 import com.bank.exception.InvalidDataException;
+import com.bank.exception.RefreshTokenRejectedException;
 import com.bank.repository.RefreshTokenRepository;
 import com.bank.repository.UserRepository;
 import com.bank.security.JwtUtil;
+import com.bank.service.security.SecurityService;
 import io.jsonwebtoken.Claims;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -37,6 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
  * recording the new jti in {@code replacedByJti} for audit. Reuse of a revoked
  * token revokes the
  * entire token family for that user (defence against stolen-token replay).
+ *
+ * <p>
+ * Every refresh token is bound to the access token it was issued with. A
+ * rotation hands that access token's session over to the new access token, and
+ * is refused once the session has been logged out or terminated.
  */
 @Service
 @RequiredArgsConstructor
@@ -46,22 +53,33 @@ public class RefreshTokenService {
   private final RefreshTokenRepository refreshTokenRepository;
   private final UserRepository userRepository;
   private final JwtUtil jwtUtil;
+  private final SecurityService securityService;
 
+  /**
+   * Issues a refresh token for the session that {@code accessToken} is about to
+   * open (login) or already holds.
+   */
   @Transactional
-  public String issueForUser(User user) {
-    String raw = jwtUtil.generateRefreshToken(user);
+  public String issueForUser(User user, String accessToken) {
+    String raw = jwtUtil.generateRefreshToken(user, accessToken);
     persist(raw, user);
     return raw;
   }
 
-  @Transactional
+  /**
+   * Rejections that revoke something are thrown as
+   * {@link RefreshTokenRejectedException}, which this transaction (and the
+   * caller's) must not roll back.
+   */
+  @Transactional(noRollbackFor = RefreshTokenRejectedException.class)
   public Rotation rotate(String presentedRaw) {
     if (presentedRaw == null || presentedRaw.isBlank()) {
       throw new InvalidDataException("Refresh token is required", "refreshToken", null);
     }
 
+    Claims presented;
     try {
-      jwtUtil.parseClaims(presentedRaw);
+      presented = jwtUtil.parseClaims(presentedRaw);
     } catch (Exception ex) {
       throw new InvalidDataException("Invalid refresh token", "refreshToken", null);
     }
@@ -69,20 +87,22 @@ public class RefreshTokenService {
     String hash = sha256Hex(presentedRaw);
     RefreshToken stored =
         refreshTokenRepository
-            .findByTokenHash(hash)
+            .findByTokenHashForUpdate(hash)
             .orElseThrow(
                 () -> new InvalidDataException("Unknown refresh token", "refreshToken", null));
 
     LocalDateTime now = LocalDateTime.now();
     if (stored.isRevoked()) {
-      // Token-reuse defence: revoke all outstanding tokens for this user.
+      // Token-reuse defence: revoke all outstanding tokens for this user and end
+      // their sessions, so whoever holds a copy has to log in again.
       log.warn(
-          "Refresh-token reuse detected for user {} (jti={}) - revoking all tokens",
+          "Refresh-token reuse detected for user {} (jti={}) - revoking all tokens and sessions",
           stored.getUsername(),
           stored.getJti());
       refreshTokenRepository.revokeAllForUser(stored.getUserId(), now);
-      throw new InvalidDataException(
-          "Refresh token has been revoked. Please log in again.", "refreshToken", null);
+      securityService.terminateSessionsForUser(stored.getUserId());
+      throw new RefreshTokenRejectedException(
+          "Refresh token has been revoked. Please log in again.");
     }
     if (stored.getExpiresAt() != null && stored.getExpiresAt().isBefore(now)) {
       throw new InvalidDataException("Refresh token expired", "refreshToken", null);
@@ -94,8 +114,21 @@ public class RefreshTokenService {
             .orElseThrow(
                 () -> new InvalidDataException("User no longer exists", "refreshToken", null));
 
+    // A refresh continues the session of the access token this refresh token was
+    // issued with. If that session was logged out or terminated (or the token
+    // predates the binding), the token must not be able to open a new one.
+    String newAccess = jwtUtil.generateToken(user);
+    String boundAccessTokenId = presented.get(JwtUtil.ACCESS_TOKEN_ID_CLAIM, String.class);
+    if (!securityService.continueSession(user.getId(), boundAccessTokenId, newAccess)) {
+      stored.setRevoked(true);
+      stored.setRevokedAt(now);
+      refreshTokenRepository.save(stored);
+      throw new RefreshTokenRejectedException(
+          "Session is no longer active. Please log in again.");
+    }
+
     // Issue new token and link rotation chain.
-    String newRaw = jwtUtil.generateRefreshToken(user);
+    String newRaw = jwtUtil.generateRefreshToken(user, newAccess);
     RefreshToken newRow = persist(newRaw, user);
 
     stored.setRevoked(true);
@@ -103,7 +136,6 @@ public class RefreshTokenService {
     stored.setReplacedByJti(newRow.getJti());
     refreshTokenRepository.save(stored);
 
-    String newAccess = jwtUtil.generateToken(user);
     return new Rotation(user, newAccess, newRaw);
   }
 

@@ -188,6 +188,53 @@ public class SecurityServiceImpl implements SecurityService {
 
   @Override
   @Transactional
+  public boolean continueSession(
+      Long userId, String previousAccessTokenId, String newAccessToken) {
+    String newTokenId = safeExtractTokenId(newAccessToken);
+    if (userId == null
+        || !StringUtils.hasText(previousAccessTokenId)
+        || !StringUtils.hasText(newTokenId)) {
+      return false;
+    }
+
+    // Only "active" is required here, not "unexpired": refreshing after the
+    // access token has expired is the normal case.
+    UserSession session = userSessionRepository
+        .findByTokenId(previousAccessTokenId)
+        .filter(UserSession::isActive)
+        .filter(candidate -> userId.equals(candidate.getUserId()))
+        .orElse(null);
+    if (session == null) {
+      return false;
+    }
+
+    session.setTokenId(newTokenId);
+    session.setExpiresAt(
+        LocalDateTime.ofInstant(
+            jwtUtil.extractExpiration(newAccessToken).toInstant(), ZoneId.systemDefault()));
+    session.setLastActivity(LocalDateTime.now());
+    userSessionRepository.save(session);
+    return true;
+  }
+
+  @Override
+  @Transactional
+  public void terminateSessionsForUser(Long userId) {
+    if (userId == null) {
+      return;
+    }
+
+    LocalDateTime now = LocalDateTime.now();
+    List<UserSession> activeSessions = userSessionRepository.findByUserIdAndActiveTrue(userId);
+    for (UserSession session : activeSessions) {
+      session.setActive(false);
+      session.setLastActivity(now);
+    }
+    userSessionRepository.saveAll(activeSessions);
+  }
+
+  @Override
+  @Transactional
   public void touchSessionActivity(String accessToken) {
     String tokenId = safeExtractTokenId(accessToken);
     if (!StringUtils.hasText(tokenId)) {

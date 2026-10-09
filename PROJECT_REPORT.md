@@ -308,7 +308,8 @@ On login failure: records `FAILED_LOGIN` in `access_logs` and `audit_logs` befor
 
 - Refresh tokens are JWTs stored as SHA-256 hashes in the `refresh_tokens` table.
 - `POST /api/auth/refresh` rotates the token: the old token is revoked and linked to the new `jti`.
-- Reuse of a revoked token revokes all outstanding refresh tokens for the user.
+- Each refresh token is bound to the session of the access token it was issued with. A refresh moves that session onto the new access token (the previous access token stops working) and is refused once the session has been logged out or terminated.
+- Reuse of a revoked token revokes all outstanding refresh tokens for the user and ends the user's active sessions.
 
 ---
 

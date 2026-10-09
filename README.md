@@ -1066,8 +1066,11 @@ Refresh tokens are:
 - Associated with token metadata
 - Revoked when reused
 - Managed as a token family
+- Bound to the session of the access token they were issued with
 
 This prevents a previously used refresh token from being continuously reused.
+
+A refresh hands the session over to the new access token: the new token is accepted and the one it replaces stops working. A refresh token cannot outlive its session, so it is refused after logout or after an administrator terminates the session. Reusing an already rotated refresh token revokes all of that user's refresh tokens and ends their sessions.
 
 ---
 

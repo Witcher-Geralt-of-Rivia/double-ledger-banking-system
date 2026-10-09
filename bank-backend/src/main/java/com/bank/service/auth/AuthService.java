@@ -16,6 +16,7 @@ import com.bank.entity.Role;
 import com.bank.entity.Status;
 import com.bank.entity.User;
 import com.bank.exception.InvalidDataException;
+import com.bank.exception.RefreshTokenRejectedException;
 import com.bank.exception.ResourceNotFoundException;
 import com.bank.exception.UnauthorizedException;
 import com.bank.repository.AccessLogRepository;
@@ -108,7 +109,7 @@ public class AuthService {
     user = userRepository.save(user);
 
     String accessToken = jwtUtil.generateToken(user);
-    String refreshToken = refreshTokenService.issueForUser(user);
+    String refreshToken = refreshTokenService.issueForUser(user, accessToken);
     return buildAuthResponse(user, accessToken, refreshToken, false);
   }
 
@@ -138,13 +139,16 @@ public class AuthService {
     }
 
     String accessToken = jwtUtil.generateToken(user);
-    String refreshToken = refreshTokenService.issueForUser(user);
+    String refreshToken = refreshTokenService.issueForUser(user, accessToken);
 
     return buildAuthResponse(user, accessToken, refreshToken, passwordChangeRequired);
   }
 
-  /** Rotate a presented refresh token; returns a fresh access+refresh pair. */
-  @Transactional
+  /**
+   * Rotate a presented refresh token; returns a fresh access+refresh pair. The new
+   * access token takes over the session of the one it replaces.
+   */
+  @Transactional(noRollbackFor = RefreshTokenRejectedException.class)
   public AuthResponseDTO refresh(String presentedRefreshToken) {
     RefreshTokenService.Rotation r = refreshTokenService.rotate(presentedRefreshToken);
     return buildAuthResponse(r.user(), r.accessToken(), r.refreshToken(), false);

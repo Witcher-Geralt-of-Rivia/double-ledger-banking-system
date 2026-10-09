@@ -29,5 +29,18 @@ public interface SecurityService {
 
   boolean isAccessTokenSessionActive(String accessToken);
 
+  /**
+   * Moves the active session currently held by the access token with id
+   * {@code previousAccessTokenId} onto {@code newAccessToken}, so the new token
+   * is accepted and the previous one no longer is.
+   *
+   * @return {@code false} when that user has no active session for the previous
+   *     token (logged out, terminated, or never recorded); nothing is changed
+   */
+  boolean continueSession(Long userId, String previousAccessTokenId, String newAccessToken);
+
+  /** Ends every active session of the given user. */
+  void terminateSessionsForUser(Long userId);
+
   void touchSessionActivity(String accessToken);
 }

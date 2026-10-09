@@ -20,6 +20,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
+  /** Refresh-token claim holding the id (jti) of the access token it was issued with. */
+  public static final String ACCESS_TOKEN_ID_CLAIM = "ati";
+
   @Value("${jwt.secret}")
   private String secretKey;
 
@@ -80,8 +83,14 @@ public class JwtUtil {
     return createToken(claims, userDetails.getUsername(), jwtExpiration);
   }
 
-  public String generateRefreshToken(UserDetails userDetails) {
+  /**
+   * Issues a refresh token bound to the access token it accompanies. The binding
+   * is what lets a refresh continue that access token's session, and only that
+   * session.
+   */
+  public String generateRefreshToken(UserDetails userDetails, String accessToken) {
     Map<String, Object> claims = new HashMap<>();
+    claims.put(ACCESS_TOKEN_ID_CLAIM, extractTokenId(accessToken));
     return createToken(claims, userDetails.getUsername(), refreshExpiration);
   }
 

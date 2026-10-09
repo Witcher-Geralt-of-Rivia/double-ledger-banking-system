@@ -17,5 +17,7 @@ interface UserSessionRepository extends JpaRepository<UserSession, String> {
 
   List<UserSession> findByActiveTrue();
 
+  List<UserSession> findByUserIdAndActiveTrue(Long userId);
+
   long countByActiveTrue();
 }
